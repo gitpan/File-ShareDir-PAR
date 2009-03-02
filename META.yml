@@ -6,7 +6,7 @@ build_requires:
   ExtUtils::MakeMaker: 6.11
   Test::More: 0.47
 distribution_type: module
-generated_by: 'Module::Install version 0.77'
+generated_by: 'Module::Install version 0.79'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -15,10 +15,9 @@ module_name: File::ShareDir::PAR
 name: File-ShareDir-PAR
 no_index:
   directory:
-    - share
     - foo
-    - share
     - inc
+    - share
     - t
 requires:
   Carp: 0
@@ -26,8 +25,9 @@ requires:
   File::Path: 0
   File::ShareDir: 0
   File::Spec: 0.80
+  PAR: 0.989
   Params::Util: 0.07
   perl: 5.005
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.03
+version: 0.04
