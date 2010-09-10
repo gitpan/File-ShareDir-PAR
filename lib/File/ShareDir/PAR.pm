@@ -24,11 +24,18 @@ File::ShareDir::PAR - File::ShareDir with PAR support
   # Like module_file, but search up the inheritance tree
   $file = class_file( 'Foo::Bar', 'file/name.txt' );
 
+You may choose to install the C<File::ShareDir::PAR>
+functions into C<File::ShareDir> so that they become available
+globally. In that case, you must do the following before
+anybody can import functions from C<File::ShareDir>:
+
+  use File::ShareDir::PAR 'global';
+
 =head1 WARNING
 
 This module contains I<highly experimental> code. If you want
 to load modules from C<.par> files using PAR
-and then access their shared directory using File::ShareDir,
+and then access their shared directory using C<File::ShareDir>,
 you probably have no choice but to use it. But beware,
 here be dragons.
 
@@ -73,14 +80,13 @@ use base 'Exporter';
 use Carp             'croak';
 use File::ShareDir   ();
 use File::Spec       ();
-use Params::Util     '_CLASS';
 use Class::Inspector ();
 use Config           ();
 use File::Path       ();
 
 use vars qw{$VERSION @EXPORT_OK %EXPORT_TAGS %CLEANUP_DIRS};
 BEGIN {
-  $VERSION     = '0.05';
+  $VERSION     = '0.06';
   @EXPORT_OK   = qw{dist_dir dist_file module_dir module_file class_file};
   %EXPORT_TAGS = (
     ALL => [ @EXPORT_OK ],
@@ -168,6 +174,7 @@ sub _search_and_unpar {
 #####################################################################
 # Interface Functions
 
+my $orig_dist_dir = \&File::ShareDir::dist_dir; # save original
 sub dist_dir {
   my @args = @_;
   if (_par_in_use()) {
@@ -190,10 +197,11 @@ sub dist_dir {
 
   # hide from croak  
   @_ = @args;
-  goto &File::ShareDir::dist_dir;
+  goto &$orig_dist_dir;
 }
 
 
+my $orig_module_dir = \&File::ShareDir::module_dir; # save original
 sub module_dir {
   my @args = @_;
   my $module = File::ShareDir::_MODULE(shift);
@@ -209,10 +217,11 @@ sub module_dir {
 
   # hide from croak  
   @_ = @args;
-  goto &File::ShareDir::module_dir;
+  goto &$orig_module_dir;
 }
 
 
+my $orig_dist_file = \&File::ShareDir::dist_file; # save original
 sub dist_file {
   my @args = @_;
   my $dist = File::ShareDir::_DIST(shift);
@@ -228,19 +237,21 @@ sub dist_file {
 
   # hide from croak  
   @_ = @args;
-  goto &File::ShareDir::dist_file;
+  goto &$orig_dist_file;
 }
 
 
+my $orig_module_file = \&File::ShareDir::module_file; # save original
 sub module_file {
   my @args = @_;
   my $module = File::ShareDir::_MODULE($_[0]);
   my $dir    = module_dir($module);
   @_ = @args;
-  goto &File::ShareDir::module_file;
+  goto &$orig_module_file;
 }
 
 
+my $orig_class_file = \&File::ShareDir::class_file; # save original
 sub class_file {
   my @args = @_;
   my $module = File::ShareDir::_MODULE(shift);
@@ -268,10 +279,22 @@ sub class_file {
 
   # hide from croak
   @_ = @args;
-  goto &File::ShareDir::class_file;
+  goto &$orig_class_file;
 }
 
-
+sub import {
+  my $class = shift;
+  my @opt = grep { $_ ne 'global' } @_;
+  if (@opt < @_) { # included 'global' option
+    no warnings 'redefine';
+    *File::ShareDir::class_file  = \&class_file;
+    *File::ShareDir::module_file = \&module_file;
+    *File::ShareDir::dist_file   = \&dist_file;
+    *File::ShareDir::module_dir  = \&module_dir;
+    *File::ShareDir::dist_dir    = \&dist_dir;
+  }
+  $class->export_to_level(1, $class, @opt);
+}
 
 1;
 
@@ -297,7 +320,7 @@ L<File::ShareDir>, L<File::HomeDir>, L<Module::Install>, L<Module::Install::Shar
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2008-2009 Steffen Mueller
+Copyright (c) 2008-2010 Steffen Mueller
 This program is free software; you can redistribute
 it and/or modify it under the same terms as Perl itself.
 

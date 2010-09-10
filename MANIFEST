@@ -20,4 +20,6 @@ share/subdir/sample.txt
 t/01_compile.t
 t/02_without_par.t
 t/03_with_par.t
+t/22_global_without_par.t
+t/23_global_with_par.t
 t/lib/ShareDir.pm

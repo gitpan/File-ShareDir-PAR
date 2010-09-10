@@ -3,10 +3,12 @@ abstract: 'File::ShareDir with PAR support'
 author:
   - 'Steffen Mueller <smueller@cpan.org>'
 build_requires:
-  ExtUtils::MakeMaker: 6.11
+  ExtUtils::MakeMaker: 6.42
   Test::More: 0.47
+configure_requires:
+  ExtUtils::MakeMaker: 6.42
 distribution_type: module
-generated_by: 'Module::Install version 0.79'
+generated_by: 'Module::Install version 1.00'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -23,11 +25,10 @@ requires:
   Carp: 0
   Class::Inspector: 1.12
   File::Path: 0
-  File::ShareDir: 0
+  File::ShareDir: 1.02
   File::Spec: 0.80
   PAR: 0.989
-  Params::Util: 0.07
   perl: 5.005
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.05
+version: 0.06

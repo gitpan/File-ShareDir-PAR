@@ -10,7 +10,7 @@ BEGIN {
   if ($got_par) {
     my $v = PAR->VERSION;
     if (eval "$v+0" >= 0.983) {
-      Test::More->import(tests => 30);
+      Test::More->import(tests => 29);
     }
     else {
       Test::More->import(skip_all => "Need PAR 0.983 for these tests. This is only $v.");
@@ -52,7 +52,7 @@ END {
   unlink($PARFILE) if defined $PARFILE;
 }
 
-use File::ShareDir::PAR;
+use File::ShareDir::PAR 'global';
 my $partmp = $ENV{PAR_TEMP};
 ok($INC{'File/ShareDir/PAR.pm'} =~ /^\Q$partmp\E/i, 'F::SD::PAR most likely loaded from .par as expected.');
 
@@ -82,7 +82,7 @@ ok( ! defined &module_dir,  'module_dir not imported by default'  );
 ok( ! defined &dist_file,   'dist_file not imported by default'   );
 ok( ! defined &module_file, 'module_file not imported by default' );
 ok( ! defined &class_file,  'class_file not imported by default'  );
-use_ok( 'File::ShareDir::PAR', ':ALL' );
+use_ok( 'File::ShareDir', ':ALL' );
 
 # Import as needed
 ok( defined &dist_dir,    'dist_dir imported'    );
@@ -90,16 +90,6 @@ ok( defined &module_dir,  'module_dir imported'  );
 ok( defined &dist_file,   'dist_file imported'   );
 ok( defined &module_file, 'module_file imported' );
 ok( defined &class_file,  'class_file imported'  );
-
-# Allow all named functions
-use_ok(
-  'File::ShareDir::PAR',
-  'module_dir', 'module_file',
-  'dist_dir', 'dist_file',
-  'class_file',
-);
-
-
 
 
 #####################################################################
